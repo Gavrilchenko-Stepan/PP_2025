@@ -10,13 +10,16 @@ namespace MyLibrary
     {
         private readonly IProductDetailView _view;
         private readonly ProductService _productService;
+        private readonly ComponentService _componentService;
 
         public ProductDetailPresenter(
             IProductDetailView view,
-            ProductService productService)
+            ProductService productService,
+            ComponentService componentService)
         {
-            _view = view;
-            _productService = productService;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+            _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
 
             _view.LoadEvent += OnViewLoad;
             _view.AddComponentEvent += OnAddComponent;
@@ -44,11 +47,30 @@ namespace MyLibrary
         {
             try
             {
-                if (_view.Composition?.Product == null) return;
+                if (_view.Composition?.Product == null)
+                {
+                    _view.ShowMessage("Не задано изделие для просмотра состава", "Внимание");
+                    return;
+                }
 
                 var composition = _productService.GetProductComposition(_view.Composition.Product.Id);
-                _view.DisplayComposition(composition);
-                _view.Composition = composition;
+                if (composition != null)
+                {
+                    _view.DisplayComposition(composition);
+                    _view.Composition = composition;
+                }
+                else
+                {
+                    _view.ShowMessage("Не удалось загрузить состав изделия", "Ошибка");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка операции");
             }
             catch (Exception ex)
             {
@@ -61,10 +83,21 @@ namespace MyLibrary
         {
             try
             {
-                if (_view.Composition?.Product == null) return;
+                if (_view.Composition?.Product == null)
+                {
+                    _view.ShowMessage("Не задано изделие", "Внимание");
+                    return;
+                }
 
                 var availableComponents = _productService.GetAvailableComponents(_view.Composition.Product.Id);
-                _view.ShowComponentSelectionForm(availableComponents);
+                if (availableComponents != null && availableComponents.Any())
+                {
+                    _view.ShowComponentSelectionForm(availableComponents);
+                }
+                else
+                {
+                    _view.ShowMessage("Нет доступных комплектующих для добавления", "Внимание");
+                }
             }
             catch (Exception ex)
             {
@@ -83,7 +116,16 @@ namespace MyLibrary
                     return;
                 }
 
-                _view.ShowQuantityForm(_view.SelectedComponent, _view.SelectedComponent.Quantity);
+                // Используем ComponentService для получения полной информации
+                var component = _componentService.GetComponentById(_view.SelectedComponent.Component.Id);
+                if (component != null)
+                {
+                    _view.ShowQuantityForm(_view.SelectedComponent, _view.SelectedComponent.Quantity);
+                }
+                else
+                {
+                    _view.ShowMessage("Комплектующее не найдено", "Ошибка");
+                }
             }
             catch (Exception ex)
             {
@@ -105,6 +147,24 @@ namespace MyLibrary
                 var component = _view.SelectedComponent;
                 if (_view.ConfirmRemove($"Удалить '{component.ComponentName}' из состава?", "Подтверждение удаления"))
                 {
+                    // Проверяем, используется ли компонент где-то еще
+                    bool isComponentUsed = _componentService.IsComponentUsed(component.Component.Id);
+
+                    if (isComponentUsed)
+                    {
+                        // Если компонент используется в других изделиях, предупреждаем
+                        int usageCount = _componentService.GetComponentUsageCount(component.Component.Id);
+                        if (usageCount > 1)
+                        {
+                            var confirm = _view.ConfirmRemove(
+                                $"Комплектующее используется в {usageCount} изделиях. Удалить его из текущего изделия?",
+                                "Внимание");
+
+                            if (!confirm)
+                                return;
+                        }
+                    }
+
                     bool success = _productService.RemoveComponentFromProduct(
                         _view.Composition.Product.Id,
                         component.Component.Id);
@@ -120,6 +180,14 @@ namespace MyLibrary
                     }
                 }
             }
+            catch (ArgumentException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка валидации");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка операции");
+            }
             catch (Exception ex)
             {
                 _view.ShowMessage($"Ошибка удаления: {ex.Message}", "Ошибка");
@@ -129,13 +197,28 @@ namespace MyLibrary
         /// Обработчик сохранения изменений
         private void OnSave(object sender, EventArgs e)
         {
-            _view.ShowMessage("Изменения сохранены", "Успех");
+            try
+            {
+                _view.ShowMessage("Изменения сохранены", "Успех");
+            }
+            catch (Exception ex)
+            {
+                _view.ShowMessage($"Ошибка сохранения: {ex.Message}", "Ошибка");
+            }
         }
 
         /// Обработчик закрытия формы
         private void OnClose(object sender, EventArgs e)
         {
-            _view.Close();
+            try
+            {
+                _view.Close();
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку закрытия, но не показываем пользователю
+                Console.WriteLine($"Ошибка при закрытии формы: {ex.Message}");
+            }
         }
 
         /// Добавление комплектующего к изделию
@@ -143,7 +226,18 @@ namespace MyLibrary
         {
             try
             {
-                if (_view.Composition?.Product == null) return;
+                if (_view.Composition?.Product == null)
+                {
+                    _view.ShowMessage("Не задано изделие", "Ошибка");
+                    return;
+                }
+
+                var component = _componentService.GetComponentById(componentId);
+                if (component == null)
+                {
+                    _view.ShowMessage("Комплектующее не найдено", "Ошибка");
+                    return;
+                }
 
                 bool success = _productService.AddComponentToProduct(
                     _view.Composition.Product.Id,
@@ -164,6 +258,10 @@ namespace MyLibrary
             {
                 _view.ShowMessage(ex.Message, "Ошибка валидации");
             }
+            catch (InvalidOperationException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка операции");
+            }
             catch (Exception ex)
             {
                 _view.ShowMessage($"Ошибка: {ex.Message}", "Ошибка");
@@ -175,7 +273,11 @@ namespace MyLibrary
         {
             try
             {
-                if (_view.Composition?.Product == null) return;
+                if (_view.Composition?.Product == null)
+                {
+                    _view.ShowMessage("Не задано изделие", "Ошибка");
+                    return;
+                }
 
                 bool success = _productService.UpdateComponentQuantity(
                     _view.Composition.Product.Id,
@@ -196,9 +298,58 @@ namespace MyLibrary
             {
                 _view.ShowMessage(ex.Message, "Ошибка валидации");
             }
+            catch (InvalidOperationException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка операции");
+            }
             catch (Exception ex)
             {
                 _view.ShowMessage($"Ошибка: {ex.Message}", "Ошибка");
+            }
+        }
+
+        /// Получение информации о доступных комплектующих
+        public string GetComponentInfo(int componentId)
+        {
+            try
+            {
+                var component = _componentService.GetComponentById(componentId);
+                if (component != null)
+                {
+                    // Используем ComponentService для получения статистики
+                    int usageCount = _componentService.GetComponentUsageCount(componentId);
+                    int totalQuantity = _componentService.GetTotalComponentQuantity(componentId);
+
+                    return $"{component.Name} ({component.Article}) - " +
+                           $"используется в {usageCount} изделиях, " +
+                           $"всего {totalQuantity} шт.";
+                }
+                return "Комплектующее не найдено";
+            }
+            catch (Exception)
+            {
+                return "Ошибка при получении информации";
+            }
+        }
+
+        /// Поиск комплектующих для добавления в состав
+        public List<Component> SearchAvailableComponents(string searchTerm)
+        {
+            try
+            {
+                if (_view.Composition?.Product == null)
+                    return new List<Component>();
+
+                var allComponents = _componentService.SearchComponents(searchTerm);
+                var usedComponents = _productService.GetAvailableComponents(_view.Composition.Product.Id);
+
+                // Фильтруем уже используемые компоненты
+                var usedIds = usedComponents.Select(c => c.Id).ToHashSet();
+                return allComponents.Where(c => !usedIds.Contains(c.Id)).ToList();
+            }
+            catch (Exception)
+            {
+                return new List<Component>();
             }
         }
     }

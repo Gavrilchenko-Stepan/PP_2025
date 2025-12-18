@@ -13,8 +13,8 @@ namespace MyLibrary
 
         public MainPresenter(IMainView view, ProductService productService)
         {
-            _view = view;
-            _productService = productService;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _productService = productService ?? throw new ArgumentNullException(nameof(productService));
 
             _view.LoadEvent += OnViewLoad;
             _view.SearchEvent += OnSearch;
@@ -56,7 +56,10 @@ namespace MyLibrary
                 else
                 {
                     var products = _productService.SearchProducts(_view.SearchText);
-                    _view.DisplayProducts(products);
+                    if (products != null)
+                    {
+                        _view.DisplayProducts(products);
+                    }
                     _view.ClearProductInfo();
                 }
             }
@@ -74,7 +77,10 @@ namespace MyLibrary
             try
             {
                 var products = _productService.GetAllProducts();
-                _view.DisplayProducts(products);
+                if (products != null)
+                {
+                    _view.DisplayProducts(products);
+                }
                 _view.ClearProductInfo();
             }
             catch (Exception ex)
@@ -136,7 +142,7 @@ namespace MyLibrary
                 if (_view.ConfirmDelete($"Удалить изделие '{product.Name}' ({product.Article})?", "Подтверждение удаления"))
                 {
                     bool success = _productService.DeleteProduct(product.Id);
-                    
+
                     if (success)
                     {
                         _view.ShowMessage("Изделие удалено", "Успех");
@@ -168,8 +174,15 @@ namespace MyLibrary
                 }
 
                 var composition = _productService.GetProductComposition(_view.SelectedProduct.Id);
-                _view.DisplayProductInfo(composition);
-                _view.ShowProductDetailForm(composition);
+                if (composition != null)
+                {
+                    _view.DisplayProductInfo(composition);
+                    _view.ShowProductDetailForm(composition);
+                }
+                else
+                {
+                    _view.ShowMessage("Не удалось загрузить состав изделия", "Ошибка");
+                }
             }
             catch (Exception ex)
             {
@@ -184,18 +197,8 @@ namespace MyLibrary
         {
             try
             {
-                // Открываем форму выбора компонента
-                using (var searchForm = new ComponentSearchForm(_productService))
-                {
-                    if (searchForm.ShowDialog() == DialogResult.OK)
-                    {
-                        if (searchForm.SelectedComponent != null)
-                        {
-                            var compositions = _productService.GetWhereComponentUsed(searchForm.SelectedComponent.Id);
-                            _view.ShowWhereUsedForm(compositions);
-                        }
-                    }
-                }
+                // Просто вызываем метод View, который сам откроет нужную форму
+                _view.ShowWhereUsedForm();
             }
             catch (Exception ex)
             {
@@ -208,6 +211,12 @@ namespace MyLibrary
         /// </summary>
         public void SaveProduct(Product product)
         {
+            if (product == null)
+            {
+                _view.ShowMessage("Данные изделия не заданы", "Ошибка");
+                return;
+            }
+
             try
             {
                 if (product.Id == 0)
@@ -223,12 +232,16 @@ namespace MyLibrary
                     else
                         _view.ShowMessage("Не удалось обновить изделие", "Ошибка");
                 }
-                
+
                 LoadProducts();
             }
             catch (ArgumentException ex)
             {
                 _view.ShowMessage(ex.Message, "Ошибка валидации");
+            }
+            catch (InvalidOperationException ex)
+            {
+                _view.ShowMessage(ex.Message, "Ошибка операции");
             }
             catch (Exception ex)
             {
