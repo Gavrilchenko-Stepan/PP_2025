@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyLibrary.Model.Repositories
 {
-    public class MySqlComponentRepository
+    public class MySqlComponentRepository : IComponentRepository
     {
         private readonly string _connectionString;
 
