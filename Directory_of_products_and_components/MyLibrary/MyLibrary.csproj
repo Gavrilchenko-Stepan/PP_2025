@@ -90,6 +90,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentService.cs" />
     <Compile Include="DataModel\Component.cs" />
     <Compile Include="DataModel\CompositionItem.cs" />
     <Compile Include="Model\Component\IComponentRepository.cs" />
