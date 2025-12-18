@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Component.cs" />
     <Compile Include="CompositionItem.cs" />
+    <Compile Include="IComponentRepository.cs" />
     <Compile Include="IProductRepository.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="ProductComponent.cs" />
