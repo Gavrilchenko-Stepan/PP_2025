@@ -331,26 +331,5 @@ namespace MyLibrary
                 return "Ошибка при получении информации";
             }
         }
-
-        /// Поиск комплектующих для добавления в состав
-        public List<Component> SearchAvailableComponents(string searchTerm)
-        {
-            try
-            {
-                if (_view.Composition?.Product == null)
-                    return new List<Component>();
-
-                var allComponents = _componentService.SearchComponents(searchTerm);
-                var usedComponents = _productService.GetAvailableComponents(_view.Composition.Product.Id);
-
-                // Фильтруем уже используемые компоненты
-                var usedIds = usedComponents.Select(c => c.Id).ToHashSet();
-                return allComponents.Where(c => !usedIds.Contains(c.Id)).ToList();
-            }
-            catch (Exception)
-            {
-                return new List<Component>();
-            }
-        }
     }
 }
