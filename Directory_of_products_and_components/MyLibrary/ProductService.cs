@@ -157,30 +157,6 @@ namespace MyLibrary
             return _productComponentRepository.UpdateComponentQuantity(productId, componentId, quantity);
         }
 
-        /// Получение всех комплектующих
-        public List<Component> GetAllComponents()
-        {
-            return _componentRepository.GetAll();
-        }
-
-        /// Получение комплектующего по ID
-        public Component GetComponentById(int id)
-        {
-            return _componentRepository.GetById(id);
-        }
-
-        /// Получение комплектующего по артикулу
-        public Component GetComponentByArticle(string article)
-        {
-            return _componentRepository.GetByArticle(article);
-        }
-
-        /// Поиск комплектующих по тексту
-        public List<Component> SearchComponents(string searchTerm)
-        {
-            return _componentRepository.Search(searchTerm);
-        }
-
         /// Валидация данных изделия
         private void ValidateProduct(Product product)
         {
