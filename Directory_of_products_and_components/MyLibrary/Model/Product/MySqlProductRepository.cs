@@ -11,9 +11,9 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlProductRepository()
+        public MySqlProductRepository(string connectionString = null)
         {
-            _connectionString = IniConfig.ConnectionString;
+            _connectionString = connectionString ?? IniConfig.ConnectionString;
         }
 
         public Product GetById(int id)
@@ -46,7 +46,6 @@ namespace MyLibrary.Model.Repositories
             return null;
         }
 
-        /// Получение всех изделий
         public List<Product> GetAll()
         {
             var products = new List<Product>();
@@ -75,7 +74,6 @@ namespace MyLibrary.Model.Repositories
             return products;
         }
 
-        /// Получение изделия по артикулу
         public Product GetByArticle(string article)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -106,7 +104,6 @@ namespace MyLibrary.Model.Repositories
             return null;
         }
 
-        /// Поиск изделий по тексту
         public List<Product> Search(string searchTerm)
         {
             var products = new List<Product>();
@@ -143,7 +140,6 @@ namespace MyLibrary.Model.Repositories
             return products;
         }
 
-        /// Добавление нового изделия
         public int Add(Product product)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -165,7 +161,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Обновление изделия
         public bool Update(Product product)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -189,7 +184,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Удаление изделия
         public bool Delete(int id)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -205,7 +199,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Проверка существования артикула
         public bool CheckArticleExists(string article, int? excludeId = null)
         {
             using (var connection = new MySqlConnection(_connectionString))

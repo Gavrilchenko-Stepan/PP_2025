@@ -11,12 +11,11 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlProductComponentRepository()
+        public MySqlProductComponentRepository(string connectionString = null)
         {
-            _connectionString = IniConfig.ConnectionString;
+            _connectionString = connectionString ?? IniConfig.ConnectionString;
         }
 
-        /// Получение комплектующих для изделия
         public List<ProductComponent> GetComponentsByProduct(int productId)
         {
             var components = new List<ProductComponent>();
@@ -50,7 +49,6 @@ namespace MyLibrary.Model.Repositories
             return components;
         }
 
-        /// Получение изделий для комплектующего
         public List<ProductComponent> GetProductsByComponent(int componentId)
         {
             var products = new List<ProductComponent>();
@@ -84,7 +82,6 @@ namespace MyLibrary.Model.Repositories
             return products;
         }
 
-        /// Добавление комплектующего к изделию
         public bool AddComponentToProduct(int productId, int componentId, int quantity)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -118,7 +115,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Удаление комплектующего из изделия
         public bool RemoveComponentFromProduct(int productId, int componentId)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -137,7 +133,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Обновление количества комплектующего в изделии
         public bool UpdateComponentQuantity(int productId, int componentId, int quantity)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -158,7 +153,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Проверка использования комплектующего в изделиях
         public bool CheckComponentUsed(int componentId)
         {
             using (var connection = new MySqlConnection(_connectionString))

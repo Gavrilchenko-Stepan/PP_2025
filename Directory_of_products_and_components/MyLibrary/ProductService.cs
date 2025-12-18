@@ -17,12 +17,34 @@ namespace MyLibrary
             IProductComponentRepository productComponentRepository,
             IComponentRepository componentRepository)
         {
-            _productRepository = productRepository;
-            _productComponentRepository = productComponentRepository;
-            _componentRepository = componentRepository;
+            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+            _productComponentRepository = productComponentRepository ?? throw new ArgumentNullException(nameof(productComponentRepository));
+            _componentRepository = componentRepository ?? throw new ArgumentNullException(nameof(componentRepository));
         }
 
-        /// Получение полного состава изделия
+        public Product GetProductById(int id) => _productRepository.GetById(id);
+        public List<Product> GetAllProducts() => _productRepository.GetAll();
+        public Product GetProductByArticle(string article) => _productRepository.GetByArticle(article);
+        public List<Product> SearchProducts(string searchTerm) => _productRepository.Search(searchTerm);
+
+        public int AddProduct(Product product)
+        {
+            ValidateProduct(product);
+            if (_productRepository.CheckArticleExists(product.Article))
+                throw new ArgumentException($"Артикул '{product.Article}' уже существует");
+            return _productRepository.Add(product);
+        }
+
+        public bool UpdateProduct(Product product)
+        {
+            ValidateProduct(product);
+            if (_productRepository.CheckArticleExists(product.Article, product.Id))
+                throw new ArgumentException($"Артикул '{product.Article}' уже используется другим изделием");
+            return _productRepository.Update(product);
+        }
+
+        public bool DeleteProduct(int id) => _productRepository.Delete(id);
+
         public ProductComposition GetProductComposition(int productId)
         {
             var product = _productRepository.GetById(productId);
@@ -52,7 +74,6 @@ namespace MyLibrary
             };
         }
 
-        /// Получение списка изделий, где используется компонент
         public List<ProductComposition> GetWhereComponentUsed(int componentId)
         {
             var productLinks = _productComponentRepository.GetProductsByComponent(componentId);
@@ -68,22 +89,20 @@ namespace MyLibrary
                 try
                 {
                     var composition = GetProductComposition(productId);
-
                     if (composition.Components.Any(c => c.Component.Id == componentId))
                     {
                         result.Add(composition);
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Console.WriteLine($"Ошибка загрузки изделия {productId}: {ex.Message}");
+                    // Игнорируем ошибки загрузки отдельных изделий
                 }
             }
 
             return result.OrderBy(c => c.Product.Name).ToList();
         }
 
-        /// Получение доступных для добавления комплектующих
         public List<Component> GetAvailableComponents(int productId)
         {
             var allComponents = _componentRepository.GetAll();
@@ -96,75 +115,36 @@ namespace MyLibrary
                 .ToList();
         }
 
-        /// Получение изделия по ID
-        public Product GetProductById(int id) => _productRepository.GetById(id);
-
-        /// Получение всех изделий
-        public List<Product> GetAllProducts() => _productRepository.GetAll();
-
-        /// Поиск изделий по тексту
-        public List<Product> SearchProducts(string searchTerm) => _productRepository.Search(searchTerm);
-
-        /// Добавление нового изделия
-        public int AddProduct(Product product)
-        {
-            ValidateProduct(product);
-
-            if (_productRepository.CheckArticleExists(product.Article))
-                throw new ArgumentException($"Артикул '{product.Article}' уже существует");
-
-            return _productRepository.Add(product);
-        }
-
-        /// Обновление изделия
-        public bool UpdateProduct(Product product)
-        {
-            ValidateProduct(product);
-
-            if (_productRepository.CheckArticleExists(product.Article, product.Id))
-                throw new ArgumentException($"Артикул '{product.Article}' уже используется другим изделием");
-
-            return _productRepository.Update(product);
-        }
-
-        /// Удаление изделия
-        public bool DeleteProduct(int id)
-        {
-            return _productRepository.Delete(id);
-        }
-
-        /// Добавление комплектующего к изделию
         public bool AddComponentToProduct(int productId, int componentId, int quantity)
         {
             if (quantity <= 0)
                 throw new ArgumentException("Количество должно быть больше 0");
-
             return _productComponentRepository.AddComponentToProduct(productId, componentId, quantity);
         }
 
-        /// Удаление комплектующего из изделия
-        public bool RemoveComponentFromProduct(int productId, int componentId)
-        {
-            return _productComponentRepository.RemoveComponentFromProduct(productId, componentId);
-        }
+        public bool RemoveComponentFromProduct(int productId, int componentId) =>
+            _productComponentRepository.RemoveComponentFromProduct(productId, componentId);
 
-        /// Обновление количества комплектующего в изделии
         public bool UpdateComponentQuantity(int productId, int componentId, int quantity)
         {
             if (quantity <= 0)
                 throw new ArgumentException("Количество должно быть больше 0");
-
             return _productComponentRepository.UpdateComponentQuantity(productId, componentId, quantity);
         }
 
-        /// Валидация данных изделия
+        public bool CheckProductArticleExists(string article, int? excludeId = null) =>
+            _productRepository.CheckArticleExists(article, excludeId);
+
         private void ValidateProduct(Product product)
         {
             if (string.IsNullOrWhiteSpace(product.Article))
                 throw new ArgumentException("Артикул обязателен");
-
             if (string.IsNullOrWhiteSpace(product.Name))
                 throw new ArgumentException("Наименование обязательно");
+            if (product.Article.Length > 50)
+                throw new ArgumentException("Артикул не должен превышать 50 символов");
+            if (product.Name.Length > 200)
+                throw new ArgumentException("Наименование не должно превышать 200 символов");
         }
     }
 }

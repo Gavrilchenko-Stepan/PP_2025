@@ -11,12 +11,11 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlComponentRepository()
+        public MySqlComponentRepository(string connectionString = null)
         {
-            _connectionString = IniConfig.ConnectionString;
+            _connectionString = connectionString ?? IniConfig.ConnectionString;
         }
 
-        /// Получение комплектующего по идентификатору
         public Component GetById(int id)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -47,7 +46,6 @@ namespace MyLibrary.Model.Repositories
             return null;
         }
 
-        /// Получение всех комплектующих
         public List<Component> GetAll()
         {
             var components = new List<Component>();
@@ -76,7 +74,6 @@ namespace MyLibrary.Model.Repositories
             return components;
         }
 
-        /// Получение комплектующего по артикулу
         public Component GetByArticle(string article)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -107,7 +104,6 @@ namespace MyLibrary.Model.Repositories
             return null;
         }
 
-        /// Поиск комплектующих по тексту
         public List<Component> Search(string searchTerm)
         {
             var components = new List<Component>();
@@ -144,7 +140,6 @@ namespace MyLibrary.Model.Repositories
             return components;
         }
 
-        /// Добавление нового комплектующего
         public int Add(Component component)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -166,7 +161,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Обновление комплектующего
         public bool Update(Component component)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -190,7 +184,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Удаление комплектующего
         public bool Delete(int id)
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -206,7 +199,6 @@ namespace MyLibrary.Model.Repositories
             }
         }
 
-        /// Проверка существования артикула
         public bool CheckArticleExists(string article, int? excludeId = null)
         {
             using (var connection = new MySqlConnection(_connectionString))

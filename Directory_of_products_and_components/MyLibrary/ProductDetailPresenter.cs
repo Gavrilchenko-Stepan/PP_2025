@@ -21,6 +21,11 @@ namespace MyLibrary
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
             _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
 
+            SubscribeToEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
             _view.LoadEvent += OnViewLoad;
             _view.AddComponentEvent += OnAddComponent;
             _view.EditComponentEvent += OnEditComponent;
@@ -30,19 +35,10 @@ namespace MyLibrary
             _view.RefreshEvent += OnRefresh;
         }
 
-        /// Обработчик загрузки формы
-        private void OnViewLoad(object sender, EventArgs e)
-        {
-            RefreshComposition();
-        }
+        private void OnViewLoad(object sender, EventArgs e) => RefreshComposition();
 
-        /// Обработчик обновления данных
-        private void OnRefresh(object sender, EventArgs e)
-        {
-            RefreshComposition();
-        }
+        private void OnRefresh(object sender, EventArgs e) => RefreshComposition();
 
-        /// Обновление состава изделия
         private void RefreshComposition()
         {
             try
@@ -78,7 +74,6 @@ namespace MyLibrary
             }
         }
 
-        /// Обработчик добавления комплектующего
         private void OnAddComponent(object sender, EventArgs e)
         {
             try
@@ -105,7 +100,6 @@ namespace MyLibrary
             }
         }
 
-        /// Обработчик редактирования количества комплектующего
         private void OnEditComponent(object sender, EventArgs e)
         {
             try
@@ -116,7 +110,7 @@ namespace MyLibrary
                     return;
                 }
 
-                // Используем ComponentService для получения полной информации
+                // Используем ComponentService для получения информации
                 var component = _componentService.GetComponentById(_view.SelectedComponent.Component.Id);
                 if (component != null)
                 {
@@ -133,7 +127,6 @@ namespace MyLibrary
             }
         }
 
-        /// Обработчик удаления комплектующего
         private void OnRemoveComponent(object sender, EventArgs e)
         {
             try
@@ -152,7 +145,6 @@ namespace MyLibrary
 
                     if (isComponentUsed)
                     {
-                        // Если компонент используется в других изделиях, предупреждаем
                         int usageCount = _componentService.GetComponentUsageCount(component.Component.Id);
                         if (usageCount > 1)
                         {
@@ -194,12 +186,12 @@ namespace MyLibrary
             }
         }
 
-        /// Обработчик сохранения изменений
         private void OnSave(object sender, EventArgs e)
         {
             try
             {
                 _view.ShowMessage("Изменения сохранены", "Успех");
+                RefreshComposition();
             }
             catch (Exception ex)
             {
@@ -207,7 +199,6 @@ namespace MyLibrary
             }
         }
 
-        /// Обработчик закрытия формы
         private void OnClose(object sender, EventArgs e)
         {
             try
@@ -216,12 +207,11 @@ namespace MyLibrary
             }
             catch (Exception ex)
             {
-                // Логируем ошибку закрытия, но не показываем пользователю
-                Console.WriteLine($"Ошибка при закрытии формы: {ex.Message}");
+                // Логируем ошибку закрытия
+                System.Diagnostics.Debug.WriteLine($"Ошибка при закрытии формы: {ex.Message}");
             }
         }
 
-        /// Добавление комплектующего к изделию
         public void AddComponentToProduct(int componentId, int quantity)
         {
             try
@@ -268,7 +258,6 @@ namespace MyLibrary
             }
         }
 
-        /// Обновление количества комплектующего в изделии
         public void UpdateComponentQuantity(int componentId, int quantity)
         {
             try
@@ -308,7 +297,6 @@ namespace MyLibrary
             }
         }
 
-        /// Получение информации о доступных комплектующих
         public string GetComponentInfo(int componentId)
         {
             try
@@ -316,7 +304,6 @@ namespace MyLibrary
                 var component = _componentService.GetComponentById(componentId);
                 if (component != null)
                 {
-                    // Используем ComponentService для получения статистики
                     int usageCount = _componentService.GetComponentUsageCount(componentId);
                     int totalQuantity = _componentService.GetTotalComponentQuantity(componentId);
 

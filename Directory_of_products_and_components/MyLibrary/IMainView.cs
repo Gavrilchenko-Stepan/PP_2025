@@ -29,9 +29,8 @@ namespace MyLibrary
         void ClearProductInfo();
         void ShowProductForm(Product product = null);
         void ShowProductDetailForm(ProductComposition composition);
-        void ShowWhereUsedForm();
 
-        Component ShowComponentSearchDialog();
+        Component ShowComponentSearchDialog(ComponentService componentService);
         void ShowWhereUsedResults(Component component, List<ProductComposition> compositions);
     }
 }

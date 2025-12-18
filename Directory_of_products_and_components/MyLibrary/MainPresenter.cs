@@ -10,12 +10,22 @@ namespace MyLibrary
     {
         private readonly IMainView _view;
         private readonly ProductService _productService;
+        private readonly ComponentService _componentService;
 
-        public MainPresenter(IMainView view, ProductService productService)
+        public MainPresenter(
+            IMainView view,
+            ProductService productService,
+            ComponentService componentService)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _productService = productService ?? throw new ArgumentNullException(nameof(productService));
+            _componentService = componentService ?? throw new ArgumentNullException(nameof(componentService));
 
+            SubscribeToEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
             _view.LoadEvent += OnViewLoad;
             _view.SearchEvent += OnSearch;
             _view.AddProductEvent += OnAddProduct;
@@ -26,42 +36,18 @@ namespace MyLibrary
             _view.RefreshEvent += OnRefresh;
         }
 
-        /// <summary>
-        /// Обработчик загрузки формы
-        /// </summary>
-        private void OnViewLoad(object sender, EventArgs e)
-        {
-            LoadProducts();
-        }
+        private void OnViewLoad(object sender, EventArgs e) => LoadProducts();
+        private void OnRefresh(object sender, EventArgs e) => LoadProducts();
 
-        /// <summary>
-        /// Обработчик обновления данных
-        /// </summary>
-        private void OnRefresh(object sender, EventArgs e)
-        {
-            LoadProducts();
-        }
-
-        /// <summary>
-        /// Обработчик поиска
-        /// </summary>
         private void OnSearch(object sender, EventArgs e)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(_view.SearchText))
-                {
                     LoadProducts();
-                }
                 else
-                {
-                    var products = _productService.SearchProducts(_view.SearchText);
-                    if (products != null)
-                    {
-                        _view.DisplayProducts(products);
-                    }
-                    _view.ClearProductInfo();
-                }
+                    _view.DisplayProducts(_productService.SearchProducts(_view.SearchText));
+                _view.ClearProductInfo();
             }
             catch (Exception ex)
             {
@@ -69,18 +55,11 @@ namespace MyLibrary
             }
         }
 
-        /// <summary>
-        /// Загрузка списка изделий
-        /// </summary>
         private void LoadProducts()
         {
             try
             {
-                var products = _productService.GetAllProducts();
-                if (products != null)
-                {
-                    _view.DisplayProducts(products);
-                }
+                _view.DisplayProducts(_productService.GetAllProducts());
                 _view.ClearProductInfo();
             }
             catch (Exception ex)
@@ -89,45 +68,18 @@ namespace MyLibrary
             }
         }
 
-        /// <summary>
-        /// Обработчик добавления изделия
-        /// </summary>
-        private void OnAddProduct(object sender, EventArgs e)
-        {
-            try
-            {
-                _view.ShowProductForm();
-            }
-            catch (Exception ex)
-            {
-                _view.ShowMessage($"Ошибка: {ex.Message}", "Ошибка");
-            }
-        }
+        private void OnAddProduct(object sender, EventArgs e) => _view.ShowProductForm();
 
-        /// <summary>
-        /// Обработчик редактирования изделия
-        /// </summary>
         private void OnEditProduct(object sender, EventArgs e)
         {
-            try
+            if (_view.SelectedProduct == null)
             {
-                if (_view.SelectedProduct == null)
-                {
-                    _view.ShowMessage("Выберите изделие для редактирования", "Внимание");
-                    return;
-                }
-
-                _view.ShowProductForm(_view.SelectedProduct);
+                _view.ShowMessage("Выберите изделие для редактирования", "Внимание");
+                return;
             }
-            catch (Exception ex)
-            {
-                _view.ShowMessage($"Ошибка: {ex.Message}", "Ошибка");
-            }
+            _view.ShowProductForm(_view.SelectedProduct);
         }
 
-        /// <summary>
-        /// Обработчик удаления изделия
-        /// </summary>
         private void OnDeleteProduct(object sender, EventArgs e)
         {
             try
@@ -141,17 +93,13 @@ namespace MyLibrary
                 var product = _view.SelectedProduct;
                 if (_view.ConfirmDelete($"Удалить изделие '{product.Name}' ({product.Article})?", "Подтверждение удаления"))
                 {
-                    bool success = _productService.DeleteProduct(product.Id);
-
-                    if (success)
+                    if (_productService.DeleteProduct(product.Id))
                     {
                         _view.ShowMessage("Изделие удалено", "Успех");
                         LoadProducts();
                     }
                     else
-                    {
                         _view.ShowMessage("Не удалось удалить изделие", "Ошибка");
-                    }
                 }
             }
             catch (Exception ex)
@@ -160,9 +108,6 @@ namespace MyLibrary
             }
         }
 
-        /// <summary>
-        /// Обработчик просмотра состава изделия
-        /// </summary>
         private void OnViewDetails(object sender, EventArgs e)
         {
             try
@@ -180,9 +125,7 @@ namespace MyLibrary
                     _view.ShowProductDetailForm(composition);
                 }
                 else
-                {
                     _view.ShowMessage("Не удалось загрузить состав изделия", "Ошибка");
-                }
             }
             catch (Exception ex)
             {
@@ -190,15 +133,24 @@ namespace MyLibrary
             }
         }
 
-        /// <summary>
-        /// Обработчик функции "Где используется"
-        /// </summary>
         private void OnWhereUsed(object sender, EventArgs e)
         {
             try
             {
-                // Просто вызываем метод View, который сам откроет нужную форму
-                _view.ShowWhereUsedForm();
+                // 1. Открываем диалог поиска компонента
+                var component = _view.ShowComponentSearchDialog(_componentService);
+                if (component == null) return;
+
+                // 2. Получаем изделия, где используется компонент
+                var compositions = _productService.GetWhereComponentUsed(component.Id);
+                if (compositions == null || !compositions.Any())
+                {
+                    _view.ShowMessage($"Комплектующее '{component.Name}' не используется ни в одном изделии", "Результат");
+                    return;
+                }
+
+                // 3. Показываем результаты
+                _view.ShowWhereUsedResults(component, compositions);
             }
             catch (Exception ex)
             {
@@ -206,9 +158,6 @@ namespace MyLibrary
             }
         }
 
-        /// <summary>
-        /// Сохранение изделия (вызывается из формы редактирования)
-        /// </summary>
         public void SaveProduct(Product product)
         {
             if (product == null)
@@ -226,22 +175,16 @@ namespace MyLibrary
                 }
                 else
                 {
-                    bool success = _productService.UpdateProduct(product);
-                    if (success)
+                    if (_productService.UpdateProduct(product))
                         _view.ShowMessage("Изделие обновлено", "Успех");
                     else
                         _view.ShowMessage("Не удалось обновить изделие", "Ошибка");
                 }
-
                 LoadProducts();
             }
             catch (ArgumentException ex)
             {
                 _view.ShowMessage(ex.Message, "Ошибка валидации");
-            }
-            catch (InvalidOperationException ex)
-            {
-                _view.ShowMessage(ex.Message, "Ошибка операции");
             }
             catch (Exception ex)
             {
