@@ -105,6 +105,7 @@
     <Compile Include="DataModel\ProductComponent.cs" />
     <Compile Include="DataModel\ProductComposition.cs" />
     <Compile Include="Model\Product\MySqlProductRepository.cs" />
+    <Compile Include="ProductDetailPresenter.cs" />
     <Compile Include="ProductService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
