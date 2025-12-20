@@ -11,9 +11,9 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlProductRepository(string connectionString = null)
+        public MySqlProductRepository()
         {
-            _connectionString = connectionString ?? IniConfig.ConnectionString;
+            _connectionString = IniConfig.ConnectionString;
         }
 
         public Product GetById(int id)
@@ -138,91 +138,6 @@ namespace MyLibrary.Model.Repositories
                 }
             }
             return products;
-        }
-
-        public int Add(Product product)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"INSERT INTO products (article, name, description, created_at) 
-                             VALUES (@Article, @Name, @Description, @CreatedAt);
-                             SELECT LAST_INSERT_ID();";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", product.Article);
-                    command.Parameters.AddWithValue("@Name", product.Name);
-                    command.Parameters.AddWithValue("@Description", product.Description ?? "");
-                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-
-                    return Convert.ToInt32(command.ExecuteScalar());
-                }
-            }
-        }
-
-        public bool Update(Product product)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"UPDATE products 
-                             SET article = @Article, 
-                                 name = @Name, 
-                                 description = @Description
-                             WHERE id = @Id";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", product.Article);
-                    command.Parameters.AddWithValue("@Name", product.Name);
-                    command.Parameters.AddWithValue("@Description", product.Description ?? "");
-                    command.Parameters.AddWithValue("@Id", product.Id);
-
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool Delete(int id)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = "DELETE FROM products WHERE id = @Id";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool CheckArticleExists(string article, int? excludeId = null)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = "SELECT COUNT(*) FROM products WHERE article = @Article";
-
-                if (excludeId.HasValue)
-                {
-                    sql += " AND id != @ExcludeId";
-                }
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", article);
-
-                    if (excludeId.HasValue)
-                    {
-                        command.Parameters.AddWithValue("@ExcludeId", excludeId.Value);
-                    }
-
-                    return Convert.ToInt32(command.ExecuteScalar()) > 0;
-                }
-            }
         }
     }
 }

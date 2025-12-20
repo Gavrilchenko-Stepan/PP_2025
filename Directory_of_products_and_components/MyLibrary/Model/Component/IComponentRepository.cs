@@ -12,9 +12,5 @@ namespace MyLibrary
         List<Component> GetAll();
         Component GetByArticle(string article);
         List<Component> Search(string searchTerm);
-        int Add(Component component);
-        bool Update(Component component);
-        bool Delete(int id);
-        bool CheckArticleExists(string article, int? excludeId = null);
     }
 }

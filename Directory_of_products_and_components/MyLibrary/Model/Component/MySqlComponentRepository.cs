@@ -11,9 +11,9 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlComponentRepository(string connectionString = null)
+        public MySqlComponentRepository()
         {
-            _connectionString = connectionString ?? IniConfig.ConnectionString;
+            _connectionString = IniConfig.ConnectionString;
         }
 
         public Component GetById(int id)
@@ -138,91 +138,6 @@ namespace MyLibrary.Model.Repositories
                 }
             }
             return components;
-        }
-
-        public int Add(Component component)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"INSERT INTO components (article, name, description, created_at) 
-                             VALUES (@Article, @Name, @Description, @CreatedAt);
-                             SELECT LAST_INSERT_ID();";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", component.Article);
-                    command.Parameters.AddWithValue("@Name", component.Name);
-                    command.Parameters.AddWithValue("@Description", component.Description ?? "");
-                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-
-                    return Convert.ToInt32(command.ExecuteScalar());
-                }
-            }
-        }
-
-        public bool Update(Component component)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"UPDATE components 
-                             SET article = @Article, 
-                                 name = @Name, 
-                                 description = @Description
-                             WHERE id = @Id";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", component.Article);
-                    command.Parameters.AddWithValue("@Name", component.Name);
-                    command.Parameters.AddWithValue("@Description", component.Description ?? "");
-                    command.Parameters.AddWithValue("@Id", component.Id);
-
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool Delete(int id)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = "DELETE FROM components WHERE id = @Id";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Id", id);
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool CheckArticleExists(string article, int? excludeId = null)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = "SELECT COUNT(*) FROM components WHERE article = @Article";
-
-                if (excludeId.HasValue)
-                {
-                    sql += " AND id != @ExcludeId";
-                }
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Article", article);
-
-                    if (excludeId.HasValue)
-                    {
-                        command.Parameters.AddWithValue("@ExcludeId", excludeId.Value);
-                    }
-
-                    return Convert.ToInt32(command.ExecuteScalar()) > 0;
-                }
-            }
         }
     }
 }

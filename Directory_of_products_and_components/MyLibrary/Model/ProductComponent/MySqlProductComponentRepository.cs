@@ -11,9 +11,9 @@ namespace MyLibrary.Model.Repositories
     {
         private readonly string _connectionString;
 
-        public MySqlProductComponentRepository(string connectionString = null)
+        public MySqlProductComponentRepository()
         {
-            _connectionString = connectionString ?? IniConfig.ConnectionString;
+            _connectionString = IniConfig.ConnectionString;
         }
 
         public List<ProductComponent> GetComponentsByProduct(int productId)
@@ -80,92 +80,6 @@ namespace MyLibrary.Model.Repositories
                 }
             }
             return products;
-        }
-
-        public bool AddComponentToProduct(int productId, int componentId, int quantity)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                string checkSql = @"SELECT COUNT(*) FROM product_components 
-                                  WHERE product_id = @ProductId AND component_id = @ComponentId";
-
-                using (var checkCmd = new MySqlCommand(checkSql, connection))
-                {
-                    checkCmd.Parameters.AddWithValue("@ProductId", productId);
-                    checkCmd.Parameters.AddWithValue("@ComponentId", componentId);
-
-                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                    if (count > 0)
-                        return false;
-                }
-
-                string sql = @"INSERT INTO product_components (product_id, component_id, quantity) 
-                             VALUES (@ProductId, @ComponentId, @Quantity)";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@ProductId", productId);
-                    command.Parameters.AddWithValue("@ComponentId", componentId);
-                    command.Parameters.AddWithValue("@Quantity", quantity);
-
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool RemoveComponentFromProduct(int productId, int componentId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"DELETE FROM product_components 
-                             WHERE product_id = @ProductId AND component_id = @ComponentId";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@ProductId", productId);
-                    command.Parameters.AddWithValue("@ComponentId", componentId);
-
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool UpdateComponentQuantity(int productId, int componentId, int quantity)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = @"UPDATE product_components 
-                             SET quantity = @Quantity
-                             WHERE product_id = @ProductId AND component_id = @ComponentId";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@Quantity", quantity);
-                    command.Parameters.AddWithValue("@ProductId", productId);
-                    command.Parameters.AddWithValue("@ComponentId", componentId);
-
-                    return command.ExecuteNonQuery() > 0;
-                }
-            }
-        }
-
-        public bool CheckComponentUsed(int componentId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string sql = "SELECT COUNT(*) FROM product_components WHERE component_id = @ComponentId";
-
-                using (var command = new MySqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@ComponentId", componentId);
-                    return Convert.ToInt32(command.ExecuteScalar()) > 0;
-                }
-            }
         }
     }
 }
