@@ -93,8 +93,6 @@
     <Compile Include="ComponentService.cs" />
     <Compile Include="DataModel\Component.cs" />
     <Compile Include="DataModel\CompositionItem.cs" />
-    <Compile Include="IMainView.cs" />
-    <Compile Include="IProductDetailView.cs" />
     <Compile Include="MainPresenter.cs" />
     <Compile Include="Model\Component\IComponentRepository.cs" />
     <Compile Include="Model\Component\MySqlComponentRepository.cs" />
