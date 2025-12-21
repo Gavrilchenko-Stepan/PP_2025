@@ -57,5 +57,10 @@ namespace MainForm
                 dgvComponents.Rows.Add("", "Состав не задан", "", "");
             }
         }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }

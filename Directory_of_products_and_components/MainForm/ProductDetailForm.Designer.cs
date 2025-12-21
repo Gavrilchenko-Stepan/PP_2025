@@ -126,6 +126,7 @@
             this.btnClose.TabIndex = 2;
             this.btnClose.Text = "Закрыть";
             this.btnClose.UseVisualStyleBackColor = false;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // ProductDetailForm
             // 
