@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MyLibrary;
+using MyLibrary.Model.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +18,26 @@ namespace MainForm
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            try
+            {
+                // Создаем репозитории (только для чтения)
+                var productRepo = new MySqlProductRepository();
+                var componentRepo = new MySqlComponentRepository();
+                var productComponentRepo = new MySqlProductComponentRepository();
+
+                // Создаем сервисы
+                var productService = new ProductService(productRepo, productComponentRepo, componentRepo);
+                var componentService = new ComponentService(componentRepo, productComponentRepo);
+
+                // Создаем главную форму (презентер создастся внутри формы)
+                var mainForm = new MainForm(productService, componentService);
+                Application.Run(mainForm);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка запуска: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
