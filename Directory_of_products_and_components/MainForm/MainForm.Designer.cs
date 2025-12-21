@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.btnDetails = new System.Windows.Forms.ToolStripButton();
             this.btnWhereUsed = new System.Windows.Forms.ToolStripButton();
@@ -47,7 +47,7 @@
             this.colDescription = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCreatedAt = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlInfo = new System.Windows.Forms.Panel();
-            this.lblInfo = new System.Windows.Forms.Label();
+            this.txtInfo = new System.Windows.Forms.TextBox();
             this.lblInfoTitle = new System.Windows.Forms.Label();
             this.toolStrip.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -151,19 +151,19 @@
             // 
             this.dgvProducts.AllowUserToAddRows = false;
             this.dgvProducts.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
-            this.dgvProducts.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(248)))), ((int)(((byte)(248)))));
+            this.dgvProducts.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dgvProducts.BackgroundColor = System.Drawing.Color.White;
             this.dgvProducts.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvProducts.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvProducts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvProducts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProducts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colId,
@@ -179,7 +179,7 @@
             this.dgvProducts.ReadOnly = true;
             this.dgvProducts.RowHeadersVisible = false;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProducts.Size = new System.Drawing.Size(984, 366);
+            this.dgvProducts.Size = new System.Drawing.Size(984, 266);
             this.dgvProducts.TabIndex = 2;
             this.dgvProducts.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProducts_CellContentClick);
             this.dgvProducts.SelectionChanged += new System.EventHandler(this.dgvProducts_SelectionChanged);
@@ -221,9 +221,9 @@
             // 
             // colCreatedAt
             // 
-            dataGridViewCellStyle3.Format = "dd.MM.yyyy";
-            dataGridViewCellStyle3.NullValue = null;
-            this.colCreatedAt.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Format = "dd.MM.yyyy";
+            dataGridViewCellStyle6.NullValue = null;
+            this.colCreatedAt.DefaultCellStyle = dataGridViewCellStyle6;
             this.colCreatedAt.FillWeight = 211.8065F;
             this.colCreatedAt.HeaderText = "Дата создания";
             this.colCreatedAt.MinimumWidth = 120;
@@ -235,28 +235,31 @@
             // 
             this.pnlInfo.BackColor = System.Drawing.Color.White;
             this.pnlInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnlInfo.Controls.Add(this.lblInfo);
+            this.pnlInfo.Controls.Add(this.txtInfo);
             this.pnlInfo.Controls.Add(this.lblInfoTitle);
             this.pnlInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlInfo.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.pnlInfo.Location = new System.Drawing.Point(0, 441);
+            this.pnlInfo.Location = new System.Drawing.Point(0, 341);
             this.pnlInfo.Name = "pnlInfo";
             this.pnlInfo.Padding = new System.Windows.Forms.Padding(15);
-            this.pnlInfo.Size = new System.Drawing.Size(984, 220);
+            this.pnlInfo.Size = new System.Drawing.Size(984, 320);
             this.pnlInfo.TabIndex = 3;
             // 
-            // lblInfo
+            // txtInfo
             // 
-            this.lblInfo.AutoSize = true;
-            this.lblInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblInfo.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
-            this.lblInfo.Location = new System.Drawing.Point(15, 40);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(434, 17);
-            this.lblInfo.TabIndex = 1;
-            this.lblInfo.Text = "Выберите изделие из списка для просмотра подробной информации...";
-            this.lblInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtInfo.BackColor = System.Drawing.Color.White;
+            this.txtInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtInfo.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.txtInfo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtInfo.Location = new System.Drawing.Point(15, 40);
+            this.txtInfo.Multiline = true;
+            this.txtInfo.Name = "txtInfo";
+            this.txtInfo.ReadOnly = true;
+            this.txtInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtInfo.Size = new System.Drawing.Size(952, 163);
+            this.txtInfo.TabIndex = 1;
+            this.txtInfo.Text = "Выберите изделие из списка для просмотра подробной информации...";
             // 
             // lblInfoTitle
             // 
@@ -312,8 +315,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colDescription;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCreatedAt;
         private System.Windows.Forms.Panel pnlInfo;
-        private System.Windows.Forms.Label lblInfo;
         private System.Windows.Forms.Label lblInfoTitle;
+        private System.Windows.Forms.TextBox txtInfo;
     }
 }
 

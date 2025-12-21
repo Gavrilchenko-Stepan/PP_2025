@@ -159,8 +159,8 @@ namespace MainForm
                     if (products.Count == 0)
                     {
                         ClearProductInfo();
-                        lblInfo.Text = "По вашему запросу ничего не найдено.";
-                        lblInfo.ForeColor = Color.FromArgb(200, 0, 0);
+                        txtInfo.Text = "По вашему запросу ничего не найдено.";
+                        txtInfo.ForeColor = Color.FromArgb(200, 0, 0);
                     }
                 }
             }
@@ -238,16 +238,14 @@ namespace MainForm
                 info.AppendLine("  Состав не задан");
             }
 
-            lblInfo.Text = info.ToString();
-            lblInfo.ForeColor = Color.Black;
-            lblInfo.TextAlign = ContentAlignment.TopLeft;
+            txtInfo.Text = info.ToString();
+            txtInfo.ForeColor = Color.Black;
         }
 
         private void ClearProductInfo()
         {
-            lblInfo.Text = "Выберите изделие из списка для просмотра подробной информации...";
-            lblInfo.ForeColor = Color.FromArgb(120, 120, 120);
-            lblInfo.TextAlign = ContentAlignment.MiddleCenter;
+            txtInfo.Text = "Выберите изделие из списка для просмотра подробной информации...";
+            txtInfo.ForeColor = Color.FromArgb(120, 120, 120);
         }
 
         private Product GetSelectedProduct()
@@ -257,16 +255,16 @@ namespace MainForm
                 var row = dgvProducts.SelectedRows[0];
 
                 // Проверяем, что это не строка "Нет данных"
-                if (row.Cells["Id"].Value?.ToString() == "")
+                if (row.Cells["colId"].Value?.ToString() == "")
                     return null;
 
                 return new Product
                 {
-                    Id = Convert.ToInt32(row.Cells["Id"].Value),
-                    Article = row.Cells["Article"].Value?.ToString() ?? "",
-                    Name = row.Cells["Name"].Value?.ToString() ?? "",
-                    Description = row.Cells["Description"].Value?.ToString() ?? "",
-                    CreatedAt = Convert.ToDateTime(row.Cells["CreatedAt"].Value)
+                    Id = Convert.ToInt32(row.Cells["colId"].Value),
+                    Article = row.Cells["colArticle"].Value?.ToString() ?? "",
+                    Name = row.Cells["colName"].Value?.ToString() ?? "",
+                    Description = row.Cells["colDescription"].Value?.ToString() ?? "",
+                    CreatedAt = Convert.ToDateTime(row.Cells["colCreatedAt"].Value)
                 };
             }
             return null;

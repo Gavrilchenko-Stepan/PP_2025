@@ -10,19 +10,7 @@ namespace MyLibrary
 {
     public class IniConfig
     {
-        public static string ConnectionString
-        {
-            get
-            {
-                var parser = new FileIniDataParser();
-                var data = parser.ReadFile("config.ini");
-
-                return $"Server={data["Database"]["Server"]};" +
-                       $"Database={data["Database"]["Database"]};" +
-                       $"Uid={data["Database"]["Uid"]};" +
-                       $"Pwd={data["Database"]["Pwd"]};" +
-                       $"Port={data["Database"]["Port"]};";
-            }
-        }
+        public static string ConnectionString =>
+            "Server=localhost;Database=product_catalog;Uid=root;Pwd=vertrigo;Port=3306;";
     }
 }
