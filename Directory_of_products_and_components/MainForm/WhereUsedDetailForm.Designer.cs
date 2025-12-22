@@ -31,10 +31,10 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lblProductInfo = new System.Windows.Forms.Label();
             this.dgvComponents = new System.Windows.Forms.DataGridView();
-            this.btnClose = new System.Windows.Forms.Button();
             this.colArticle = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnClose = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvComponents)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,20 +79,6 @@
             this.dgvComponents.Size = new System.Drawing.Size(450, 250);
             this.dgvComponents.TabIndex = 1;
             // 
-            // btnClose
-            // 
-            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
-            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(385, 330);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(80, 25);
-            this.btnClose.TabIndex = 2;
-            this.btnClose.Text = "Закрыть";
-            this.btnClose.UseVisualStyleBackColor = false;
-            // 
             // colArticle
             // 
             this.colArticle.HeaderText = "Артикул";
@@ -111,6 +97,20 @@
             this.colQuantity.Name = "colQuantity";
             this.colQuantity.ReadOnly = true;
             // 
+            // btnClose
+            // 
+            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnClose.ForeColor = System.Drawing.Color.White;
+            this.btnClose.Location = new System.Drawing.Point(385, 330);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(80, 25);
+            this.btnClose.TabIndex = 2;
+            this.btnClose.Text = "Закрыть";
+            this.btnClose.UseVisualStyleBackColor = false;
+            // 
             // WhereUsedDetailForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -124,7 +124,7 @@
             this.MaximizeBox = false;
             this.Name = "WhereUsedDetailForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Состав изделия: {_composition.Product.Name}";
+            this.Text = "Состав изделия";
             ((System.ComponentModel.ISupportInitialize)(this.dgvComponents)).EndInit();
             this.ResumeLayout(false);
 

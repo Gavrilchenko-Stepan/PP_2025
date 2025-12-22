@@ -180,7 +180,7 @@
             this.MinimizeBox = false;
             this.Name = "WhereUsedForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Где используется: [Название компонента]";
+            this.Text = "Где используется";
             ((System.ComponentModel.ISupportInitialize)(this.dgvProducts)).EndInit();
             this.ResumeLayout(false);
 

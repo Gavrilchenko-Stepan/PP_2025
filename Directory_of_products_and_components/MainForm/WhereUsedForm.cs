@@ -72,7 +72,7 @@ namespace MainForm
             if (dgvProducts.SelectedRows.Count > 0)
             {
                 var row = dgvProducts.SelectedRows[0];
-                int productId = Convert.ToInt32(row.Cells["ProductId"].Value);
+                int productId = Convert.ToInt32(row.Cells["colProductId"].Value);
 
                 var composition = _compositions.FirstOrDefault(c => c.Product.Id == productId);
                 if (composition != null)

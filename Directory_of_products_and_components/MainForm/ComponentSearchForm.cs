@@ -91,6 +91,8 @@ namespace MainForm
             if (dgvComponents.SelectedRows.Count > 0)
             {
                 SelectComponent();
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             else
             {
@@ -106,10 +108,10 @@ namespace MainForm
                 var row = dgvComponents.SelectedRows[0];
                 _selectedComponent = new Component
                 {
-                    Id = Convert.ToInt32(row.Cells["Id"].Value),
-                    Article = row.Cells["Article"].Value?.ToString() ?? "",
-                    Name = row.Cells["Name"].Value?.ToString() ?? "",
-                    Description = row.Cells["Description"].Value?.ToString() ?? ""
+                    Id = Convert.ToInt32(row.Cells["colId"].Value),
+                    Article = row.Cells["colArticle"].Value?.ToString() ?? "",
+                    Name = row.Cells["colName"].Value?.ToString() ?? "",
+                    Description = row.Cells["colDescription"].Value?.ToString() ?? ""
                 };
             }
         }
