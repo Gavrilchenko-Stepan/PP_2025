@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyLibrary
 {
@@ -12,10 +10,7 @@ namespace MyLibrary
         private readonly IProductComponentRepository _productComponentRepository;
         private readonly IComponentRepository _componentRepository;
 
-        public ProductService(
-            IProductRepository productRepository,
-            IProductComponentRepository productComponentRepository,
-            IComponentRepository componentRepository)
+        public ProductService(IProductRepository productRepository, IProductComponentRepository productComponentRepository, IComponentRepository componentRepository)
         {
             _productRepository = productRepository;
             _productComponentRepository = productComponentRepository;
@@ -29,25 +24,18 @@ namespace MyLibrary
 
         public ProductComposition GetProductComposition(int productId)
         {
-            var product = _productRepository.GetById(productId);
-            if (product == null)
-                throw new ArgumentException($"Изделие с ID {productId} не найдено");
+            Product product = _productRepository.GetById(productId)
+        ?? throw new ArgumentException($"Изделие с ID {productId} не найдено");
 
-            var componentLinks = _productComponentRepository.GetComponentsByProduct(productId);
-            var compositionItems = new List<CompositionItem>();
-
-            foreach (var link in componentLinks)
-            {
-                var component = _componentRepository.GetById(link.ComponentId);
-                if (component != null)
+            var compositionItems = _productComponentRepository.GetComponentsByProduct(productId).Select(link => new
                 {
-                    compositionItems.Add(new CompositionItem
-                    {
-                        Component = component,
-                        Quantity = link.Quantity
-                    });
-                }
-            }
+                    Link = link,
+                    Component = _componentRepository.GetById(link.ComponentId)
+                }).Where(x => x.Component != null).Select(x => new CompositionItem
+                {
+                    Component = x.Component,
+                    Quantity = x.Link.Quantity
+                }).ToList();
 
             return new ProductComposition
             {
@@ -58,19 +46,16 @@ namespace MyLibrary
 
         public List<ProductComposition> GetWhereComponentUsed(int componentId)
         {
-            var productLinks = _productComponentRepository.GetProductsByComponent(componentId);
-            var result = new List<ProductComposition>();
+            List<ProductComponent> productLinks = _productComponentRepository.GetProductsByComponent(componentId);
+            List<ProductComposition> result = new List<ProductComposition>();
 
-            var uniqueProductIds = productLinks
-                .Select(l => l.ProductId)
-                .Distinct()
-                .ToList();
+            var uniqueProductIds = productLinks.Select(l => l.ProductId).Distinct().ToList();
 
             foreach (var productId in uniqueProductIds)
             {
                 try
                 {
-                    var composition = GetProductComposition(productId);
+                    ProductComposition composition = GetProductComposition(productId);
                     if (composition.Components.Any(c => c.Component.Id == componentId))
                     {
                         result.Add(composition);

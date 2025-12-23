@@ -27,7 +27,7 @@ namespace MainForm
 
                 // Создаем сервисы
                 var productService = new ProductService(productRepo, productComponentRepo, componentRepo);
-                var componentService = new ComponentService(componentRepo, productComponentRepo);
+                var componentService = new ComponentService(componentRepo);
 
                 // Создаем главную форму (презентер создастся внутри формы)
                 var mainForm = new MainForm(productService, componentService);

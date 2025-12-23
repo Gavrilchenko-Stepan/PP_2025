@@ -1,29 +1,17 @@
 ﻿using MyLibrary;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace MainForm
 {
     public partial class ProductDetailForm : Form
     {
-        private ProductService _productService;
-        private ComponentService _componentService;
-
         private ProductComposition _composition;
-        public ProductDetailForm(ProductComposition composition,
-            ProductService productService,
-            ComponentService componentService)
+        public ProductDetailForm(ProductComposition composition, ProductService productService, ComponentService componentService)
         {
             _composition = composition;
-            _productService = productService;
-            _componentService = componentService;
             InitializeComponent();
             LoadComposition();
         }

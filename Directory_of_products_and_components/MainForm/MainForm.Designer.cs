@@ -37,12 +37,6 @@
             this.btnWhereUsed = new System.Windows.Forms.ToolStripButton();
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
             this.searchPanel = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.dtpDateFrom = new System.Windows.Forms.DateTimePicker();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btnReset = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.dtpDateTo = new System.Windows.Forms.DateTimePicker();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.lblSearch = new System.Windows.Forms.Label();
             this.dgvProducts = new System.Windows.Forms.DataGridView();
@@ -56,7 +50,6 @@
             this.lblInfoTitle = new System.Windows.Forms.Label();
             this.toolStrip.SuspendLayout();
             this.searchPanel.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProducts)).BeginInit();
             this.pnlInfo.SuspendLayout();
             this.SuspendLayout();
@@ -109,79 +102,14 @@
             // 
             this.searchPanel.BackColor = System.Drawing.Color.WhiteSmoke;
             this.searchPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.searchPanel.Controls.Add(this.groupBox1);
             this.searchPanel.Controls.Add(this.txtSearch);
             this.searchPanel.Controls.Add(this.lblSearch);
             this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.searchPanel.Location = new System.Drawing.Point(0, 39);
             this.searchPanel.Name = "searchPanel";
             this.searchPanel.Padding = new System.Windows.Forms.Padding(10, 10, 10, 5);
-            this.searchPanel.Size = new System.Drawing.Size(984, 100);
+            this.searchPanel.Size = new System.Drawing.Size(984, 47);
             this.searchPanel.TabIndex = 1;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.dtpDateFrom);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.btnReset);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.dtpDateTo);
-            this.groupBox1.Location = new System.Drawing.Point(629, 10);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(338, 80);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Фильтрация";
-            // 
-            // dtpDateFrom
-            // 
-            this.dtpDateFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpDateFrom.Location = new System.Drawing.Point(67, 19);
-            this.dtpDateFrom.Name = "dtpDateFrom";
-            this.dtpDateFrom.Size = new System.Drawing.Size(120, 20);
-            this.dtpDateFrom.TabIndex = 5;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(8, 54);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 15);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Дата по:";
-            // 
-            // btnReset
-            // 
-            this.btnReset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnReset.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnReset.ForeColor = System.Drawing.Color.White;
-            this.btnReset.Location = new System.Drawing.Point(217, 19);
-            this.btnReset.Name = "btnReset";
-            this.btnReset.Size = new System.Drawing.Size(110, 25);
-            this.btnReset.TabIndex = 7;
-            this.btnReset.Text = "Сбросить фильтры";
-            this.btnReset.UseVisualStyleBackColor = false;
-            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(8, 22);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 15);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Дата с:";
-            // 
-            // dtpDateTo
-            // 
-            this.dtpDateTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpDateTo.Location = new System.Drawing.Point(67, 49);
-            this.dtpDateTo.Name = "dtpDateTo";
-            this.dtpDateTo.Size = new System.Drawing.Size(120, 20);
-            this.dtpDateTo.TabIndex = 6;
             // 
             // txtSearch
             // 
@@ -231,16 +159,15 @@
             this.colCreatedAt});
             this.dgvProducts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvProducts.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.dgvProducts.Location = new System.Drawing.Point(0, 139);
+            this.dgvProducts.Location = new System.Drawing.Point(0, 86);
             this.dgvProducts.MultiSelect = false;
             this.dgvProducts.Name = "dgvProducts";
             this.dgvProducts.ReadOnly = true;
             this.dgvProducts.RowHeadersVisible = false;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProducts.Size = new System.Drawing.Size(984, 240);
+            this.dgvProducts.Size = new System.Drawing.Size(984, 293);
             this.dgvProducts.TabIndex = 2;
             this.dgvProducts.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProducts_CellDoubleClick);
-            this.dgvProducts.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvProducts_ColumnHeaderMouseClick);
             this.dgvProducts.SelectionChanged += new System.EventHandler(this.dgvProducts_SelectionChanged);
             // 
             // colId
@@ -350,8 +277,6 @@
             this.toolStrip.PerformLayout();
             this.searchPanel.ResumeLayout(false);
             this.searchPanel.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProducts)).EndInit();
             this.pnlInfo.ResumeLayout(false);
             this.pnlInfo.PerformLayout();
@@ -378,12 +303,6 @@
         private System.Windows.Forms.Panel pnlInfo;
         private System.Windows.Forms.Label lblInfoTitle;
         private System.Windows.Forms.TextBox txtInfo;
-        private System.Windows.Forms.Button btnReset;
-        private System.Windows.Forms.DateTimePicker dtpDateTo;
-        private System.Windows.Forms.DateTimePicker dtpDateFrom;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

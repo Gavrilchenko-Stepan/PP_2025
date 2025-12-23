@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MyLibrary
 {
     public class ComponentService
     {
         private readonly IComponentRepository _componentRepository;
-        private readonly IProductComponentRepository _productComponentRepository;
 
-        public ComponentService(
-            IComponentRepository componentRepository,
-            IProductComponentRepository productComponentRepository)
+        public ComponentService(IComponentRepository componentRepository)
         {
             _componentRepository = componentRepository;
-            _productComponentRepository = productComponentRepository;
         }
 
         public Component GetComponentById(int id) => _componentRepository.GetById(id);

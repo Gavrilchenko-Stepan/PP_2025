@@ -1,9 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyLibrary.Model.Repositories
 {
@@ -19,7 +16,6 @@ namespace MyLibrary.Model.Repositories
         public List<ProductComponent> GetComponentsByProduct(int productId)
         {
             var components = new List<ProductComponent>();
-
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
@@ -31,7 +27,6 @@ namespace MyLibrary.Model.Repositories
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.AddWithValue("@ProductId", productId);
-
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
