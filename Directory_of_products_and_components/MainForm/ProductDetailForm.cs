@@ -18,8 +18,10 @@ namespace MainForm
 
         private void LoadComposition()
         {
+            int totalComponents = _composition.Components?.Sum(c => c.Quantity) ?? 0;
+            int componentTypesCount = _composition.Components?.Count ?? 0;
             lblProductInfo.Text = $"📋 Изделие: {_composition.Product.Name} ({_composition.Product.Article})\n" +
-                                 $"📦 Всего комплектующих: {_composition.TotalComponents} шт. ({_composition.ComponentTypesCount} позиций)";
+                         $"📦 Всего комплектующих: {totalComponents} шт. ({componentTypesCount} позиций)";
 
             DisplayComposition();
         }

@@ -37,9 +37,10 @@ namespace MainForm
             dgvProducts.Rows.Clear();
             foreach (var composition in _compositions.OrderBy(c => c.Product.Name))
             {
-                var componentInProduct = composition.Components
+                // Находим количество этого компонента в изделии
+                var componentItem = composition.Components?
                     .FirstOrDefault(c => c.Component.Id == _component.Id);
-                var quantity = componentInProduct?.Quantity ?? 0;
+                var quantity = componentItem?.Quantity ?? 0;
 
                 dgvProducts.Rows.Add(
                     composition.Product.Id,

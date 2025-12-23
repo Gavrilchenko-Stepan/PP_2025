@@ -158,8 +158,12 @@ namespace MainForm
 
             info.AppendLine($"📅 Дата создания: {composition.Product.CreatedAt:dd.MM.yyyy HH:mm}");
             info.AppendLine();
-            info.AppendLine($"🔢 Позиций в составе: {composition.ComponentTypesCount}");
-            info.AppendLine($"📦 Всего комплектующих: {composition.TotalComponents}");
+
+            int componentTypesCount = GetComponentTypesCount(composition.Components);
+            int totalComponents = GetTotalComponents(composition.Components);
+
+            info.AppendLine($"🔢 Позиций в составе: {componentTypesCount}");
+            info.AppendLine($"📦 Всего комплектующих: {totalComponents}");
             info.AppendLine();
             info.AppendLine("🔩 СОСТАВ:");
 
@@ -167,7 +171,7 @@ namespace MainForm
             {
                 foreach (var item in composition.Components.OrderByDescending(c => c.Quantity))
                 {
-                    info.AppendLine($"  • {item.ComponentName} — {item.Quantity} шт.");
+                    info.AppendLine($"  • {item.Component.Name} — {item.Quantity} шт.");
                 }
             }
             else
@@ -280,6 +284,16 @@ namespace MainForm
                 txtSearch.Text = "Введите артикул или наименование...";
                 txtSearch.ForeColor = Color.Gray;
             }
+        }
+
+        private int GetTotalComponents(List<CompositionItem> components)
+        {
+            return components?.Sum(c => c.Quantity) ?? 0;
+        }
+
+        private int GetComponentTypesCount(List<CompositionItem> components)
+        {
+            return components?.Count ?? 0;
         }
     }
 }

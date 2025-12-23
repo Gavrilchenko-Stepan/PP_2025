@@ -40,7 +40,7 @@ namespace MainForm
                 if (item.Component.Id == _targetComponent.Id)
                 {
                     var row = dgvComponents.Rows[rowIndex];
-                    row.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 204); // Светло-желтый
+                    row.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 204);
                     row.DefaultCellStyle.Font = new Font(dgvComponents.Font, FontStyle.Bold);
                 }
             }
