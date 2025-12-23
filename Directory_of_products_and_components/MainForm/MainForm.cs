@@ -15,6 +15,9 @@ namespace MainForm
     {
         private ProductService _productService;
         private ComponentService _componentService;
+        private List<Product> _allProducts;
+        private string _sortedBy = "";
+        private bool _sortAscending = true;
 
         public MainForm(ProductService productService, ComponentService componentService)
         {
@@ -22,12 +25,20 @@ namespace MainForm
             _componentService = componentService;
 
             InitializeComponent();
+
+            txtSearch.TextChanged += (s, e) => ApplyFilters();
+
+            dtpDateFrom.ValueChanged += (s, e) => ApplyFilters();
+            dtpDateTo.ValueChanged += (s, e) => ApplyFilters();
+
             LoadProducts();
+
+            dtpDateFrom.Value = DateTime.Today.AddMonths(-1);
+            dtpDateTo.Value = DateTime.Today;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            LoadProducts();
         }
 
         private void btnDetails_Click(object sender, EventArgs e)
@@ -100,73 +111,22 @@ namespace MainForm
             LoadProducts();
         }
 
-        private void btnSearch_Click(object sender, EventArgs e)
-        {
-            SearchProducts();
-        }
-
-        private void txtSearch_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                SearchProducts();
-                e.Handled = true;
-            }
-        }
-
         private void dgvProducts_SelectionChanged(object sender, EventArgs e)
         {
             UpdateProductInfo();
-        }
-
-        private void dgvProducts_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                btnDetails_Click(sender, e);
-            }
         }
 
         private void LoadProducts()
         {
             try
             {
-                var products = _productService.GetAllProducts();
-                DisplayProducts(products);
+                _allProducts = _productService.GetAllProducts();
+                ApplyFilters();
                 ClearProductInfo();
-                txtSearch.Clear();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка загрузки изделий: {ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void SearchProducts()
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(txtSearch.Text))
-                {
-                    LoadProducts();
-                }
-                else
-                {
-                    var products = _productService.SearchProducts(txtSearch.Text);
-                    DisplayProducts(products);
-
-                    if (products.Count == 0)
-                    {
-                        ClearProductInfo();
-                        txtInfo.Text = "По вашему запросу ничего не найдено.";
-                        txtInfo.ForeColor = Color.FromArgb(200, 0, 0);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка поиска: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -177,7 +137,7 @@ namespace MainForm
 
             if (products.Count == 0)
             {
-                dgvProducts.Rows.Add("", "Нет данных", "Список изделий пуст", "", "");
+                dgvProducts.Rows.Add("", "Нет данных", "По вашему запросу ничего не найдено", "", "");
                 return;
             }
 
@@ -214,7 +174,7 @@ namespace MainForm
         {
             var info = new System.Text.StringBuilder();
             info.AppendLine($"📋 ИЗДЕЛИЕ: {composition.Product.Name}");
-            info.AppendLine($"🏷️  Артикул: {composition.Product.Article}");
+            info.AppendLine($"🏷️ Артикул: {composition.Product.Article}");
 
             if (!string.IsNullOrEmpty(composition.Product.Description))
                 info.AppendLine($"📝 Описание: {composition.Product.Description}");
@@ -268,6 +228,176 @@ namespace MainForm
                 };
             }
             return null;
+        }
+
+        private void dgvProducts_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            var column = dgvProducts.Columns[e.ColumnIndex];
+
+            // Сортируем только по имени и дате
+            if (column.Name == "colName" || column.Name == "colCreatedAt")
+            {
+                if (_sortedBy == column.Name)
+                {
+                    // Меняем направление сортировки
+                    _sortAscending = !_sortAscending;
+                }
+                else
+                {
+                    // Новая колонка для сортировки
+                    _sortedBy = column.Name;
+                    _sortAscending = true;
+                }
+
+                // Обновляем заголовки
+                UpdateSortHeaders();
+                ApplyFilters();
+            }
+        }
+
+        private void ApplyFilters()
+        {
+            try
+            {
+                // Если список продуктов пуст, загружаем его
+                if (_allProducts == null || _allProducts.Count == 0)
+                {
+                    LoadProducts();
+                    return;
+                }
+
+                // Начинаем со всех продуктов
+                List<Product> filteredProducts = _allProducts;
+
+                // 1. Текстовый поиск (если есть текст и это не placeholder)
+                if (!string.IsNullOrWhiteSpace(txtSearch.Text) &&
+                    txtSearch.Text != "Введите артикул или наименование..." &&
+                    txtSearch.ForeColor != Color.Gray)
+                {
+                    string search = txtSearch.Text.Trim().ToLower();
+                    filteredProducts = filteredProducts.Where(p =>
+                        (p.Name != null && p.Name.ToLower().Contains(search)) ||          // ← ТОЛЬКО по НАИМЕНОВАНИЮ
+                        (p.Article != null && p.Article.ToLower().Contains(search))       // ← ТОЛЬКО по АРТИКУЛУ
+                                                                                          // Убрали поиск по описанию: (p.Description != null && p.Description.ToLower().Contains(search))
+                    ).ToList();
+                }
+
+                // 2. Фильтрация по дате (ВСЕГДА применяется)
+                DateTime fromDate = dtpDateFrom.Value.Date;
+                DateTime toDate = dtpDateTo.Value.Date;
+
+                filteredProducts = filteredProducts
+                    .Where(p => p.CreatedAt.Date >= fromDate && p.CreatedAt.Date <= toDate)
+                    .ToList();
+
+                // 3. Сортировка
+                filteredProducts = SortProducts(filteredProducts);
+
+                // 4. Отображение
+                DisplayProducts(filteredProducts);
+
+                // 5. Автовыделение первой строки, если есть результаты
+                if (filteredProducts.Count > 0 && dgvProducts.Rows.Count > 0)
+                {
+                    if (dgvProducts.SelectedRows.Count == 0 ||
+                        dgvProducts.SelectedRows[0].Cells["colId"].Value?.ToString() == "")
+                    {
+                        dgvProducts.Rows[0].Selected = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Игнорируем ошибки при быстрой фильтрации
+                Console.WriteLine($"Фильтрация: {ex.Message}");
+            }
+        }
+
+        private List<Product> SortProducts(List<Product> products)
+        {
+            if (string.IsNullOrEmpty(_sortedBy))
+                return products;
+
+            if (_sortedBy == "colName")
+            {
+                return _sortAscending
+                    ? products.OrderBy(p => p.Name).ToList()
+                    : products.OrderByDescending(p => p.Name).ToList();
+            }
+            else if (_sortedBy == "colCreatedAt")
+            {
+                return _sortAscending
+                    ? products.OrderBy(p => p.CreatedAt).ToList()
+                    : products.OrderByDescending(p => p.CreatedAt).ToList();
+            }
+
+            return products;
+        }
+
+        private void UpdateSortHeaders()
+        {
+            // Сбрасываем все заголовки
+            dgvProducts.Columns["colName"].HeaderText = "Наименование";
+            dgvProducts.Columns["colCreatedAt"].HeaderText = "Дата создания";
+
+            // Добавляем стрелку к активной колонке
+            if (!string.IsNullOrEmpty(_sortedBy))
+            {
+                string arrow = _sortAscending ? " ▲" : " ▼";
+
+                if (_sortedBy == "colName")
+                    dgvProducts.Columns["colName"].HeaderText = "Наименование" + arrow;
+                else if (_sortedBy == "colCreatedAt")
+                    dgvProducts.Columns["colCreatedAt"].HeaderText = "Дата создания" + arrow;
+            }
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            txtSearch.Text = "Введите артикул или наименование...";
+            txtSearch.ForeColor = Color.Gray;
+
+            // Сбрасываем даты на последний месяц
+            dtpDateFrom.Value = DateTime.Today.AddMonths(-1);
+            dtpDateTo.Value = DateTime.Today;
+
+            // Сбрасываем сортировку
+            _sortedBy = "";
+            _sortAscending = true;
+            UpdateSortHeaders();
+
+            // Обновляем фильтры
+            ApplyFilters();
+        }
+
+        private void dgvProducts_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                // Проверяем, что это не строка "Нет данных"
+                if (dgvProducts.Rows[e.RowIndex].Cells["colId"].Value?.ToString() != "")
+                {
+                    btnDetails_Click(sender, e);
+                }
+            }
+        }
+
+        private void txtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Text == "Введите артикул или наименование...")
+            {
+                txtSearch.Text = "";
+                txtSearch.ForeColor = Color.Black;
+            }
+        }
+
+        private void txtSearch_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Text = "Введите артикул или наименование...";
+                txtSearch.ForeColor = Color.Gray;
+            }
         }
     }
 }
