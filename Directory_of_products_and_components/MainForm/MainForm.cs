@@ -40,7 +40,7 @@ namespace MainForm
                 ProductComposition composition = _productService.GetProductComposition(product.Id);
                 if (composition != null)
                 {
-                    using (ProductDetailForm form = new ProductDetailForm(composition, _productService, _componentService))
+                    using (ProductDetailForm form = new ProductDetailForm(composition))
                     {
                         form.ShowDialog();
                     }
