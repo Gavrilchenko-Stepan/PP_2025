@@ -21,6 +21,8 @@ namespace MainForm
 
             InitializeComponent();
 
+            dgvProducts.ClearSelection();
+
             txtSearch.TextChanged += (s, e) => ApplyFilters();
 
             LoadProducts();
@@ -121,6 +123,7 @@ namespace MainForm
             if (products.Count == 0)
             {
                 dgvProducts.Rows.Add("", "Нет данных", "По вашему запросу ничего не найдено", "", "");
+                dgvProducts.ClearSelection();
                 return;
             }
 
@@ -128,6 +131,8 @@ namespace MainForm
             {
                 dgvProducts.Rows.Add(product.Id,product.Article, product.Name, product.Description ?? "", product.CreatedAt);
             }
+            dgvProducts.ClearSelection();
+            ClearProductInfo();
         }
 
         private void UpdateProductInfo()
@@ -239,16 +244,6 @@ namespace MainForm
 
                 // 2. Отображение
                 DisplayProducts(filteredProducts);
-
-                // 3. Автовыделение первой строки
-                if (filteredProducts.Count > 0 && dgvProducts.Rows.Count > 0)
-                {
-                    if (dgvProducts.SelectedRows.Count == 0 ||
-                        dgvProducts.SelectedRows[0].Cells["colId"].Value?.ToString() == "")
-                    {
-                        dgvProducts.Rows[0].Selected = true;
-                    }
-                }
             }
             catch (Exception ex)
             {
