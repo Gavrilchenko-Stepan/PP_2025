@@ -47,6 +47,7 @@ namespace MainForm
                     component.Description ?? ""
                 );
             }
+            dgvComponents.ClearSelection();
         }
 
         private void btnSearch_Click(object sender, EventArgs e)

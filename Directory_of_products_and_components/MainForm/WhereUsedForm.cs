@@ -49,6 +49,7 @@ namespace MainForm
                     $"{quantity} шт."
                 );
             }
+            dgvProducts.ClearSelection();
         }
 
         private void btnViewDetails_Click(object sender, EventArgs e)

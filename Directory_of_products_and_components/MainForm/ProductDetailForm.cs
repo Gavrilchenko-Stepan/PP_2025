@@ -46,6 +46,7 @@ namespace MainForm
             {
                 dgvComponents.Rows.Add("", "Состав не задан", "", "");
             }
+            dgvComponents.ClearSelection();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
