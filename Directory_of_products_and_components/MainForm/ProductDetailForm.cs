@@ -9,7 +9,7 @@ namespace MainForm
     public partial class ProductDetailForm : Form
     {
         private ProductComposition _composition;
-        public ProductDetailForm(ProductComposition composition, ProductService productService, ComponentService componentService)
+        public ProductDetailForm(ProductComposition composition)
         {
             _composition = composition;
             InitializeComponent();
